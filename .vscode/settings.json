@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "int32.h": "c",
+        "usart.h": "c"
+    }
+}
