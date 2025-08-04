@@ -6,11 +6,11 @@
 
 /Middlewares/
 
-*.ioc
-
 *.s
 
 *.ld
 
-.mxproject
+#*.ioc
+
+#.mxproject
 
