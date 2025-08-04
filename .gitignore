@@ -6,6 +6,8 @@
 
 /Middlewares/
 
+/micro_ros_stm32bubemx_utils/
+
 *.s
 
 *.ld
