@@ -100,8 +100,8 @@ uint8_t MPU6050_Init(I2C_HandleTypeDef *I2Cx)
         HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, GYRO_CONFIG_REG, 1, &Data, 1, i2c_timeout);
         
 		// 设置 Sample Rate Divider 寄存器 (采样速率分频器)，采样速率 = 1kHz / ( 0X04 + 1) = 200Hz    1khz/(0x09+1)=100Hz
-        // 45hz
-        Data = 0x15;
+        // 0x15   45hz
+        Data = 0x0f;
         HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, SMPLRT_DIV_REG, 1, &Data, 1, i2c_timeout);
 
 		return 0;		//返回0，表示 MPU6050 正常

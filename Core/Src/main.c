@@ -21,12 +21,14 @@
 #include "cmsis_os.h"
 #include "dma.h"
 #include "i2c.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "mpu6050.h"
+#include "ultrasonic.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -94,8 +96,21 @@ int main(void)
   MX_DMA_Init();
   MX_USART3_UART_Init();
   MX_I2C2_Init();
+  MX_TIM8_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+  // 启动点击pwm
+  //HAL_TIM_Base_Start(&htim8);
+  HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_2);
+  
+  __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1500);
+  __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1500);
+
   MPU6050_Init(&hi2c2); 
+
+  Ultrasonic_Init();
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -186,7 +201,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-
+  if(htim->Instance == htim3.Instance)	//溢出中断
+  {
+    Ultrasonic_TIM_PeriodElapsedCallback();
+  }
   /* USER CODE END Callback 1 */
 }
 
