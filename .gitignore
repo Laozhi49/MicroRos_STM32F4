@@ -1,16 +1,16 @@
 /build/
 
-/Drivers/
+#/Drivers/
 
-/.vscode/
+#/.vscode/
 
-/Middlewares/
+#/Middlewares/
 
-/micro_ros_stm32bubemx_utils/
+#/micro_ros_stm32cubemx_utils/
 
-*.s
+#*.s
 
-*.ld
+#*.ld
 
 #*.ioc
 
