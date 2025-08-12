@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "int32.h": "c",
+        "usart.h": "c",
+        "header.h": "c",
+        "twist.h": "c"
+    }
+}
