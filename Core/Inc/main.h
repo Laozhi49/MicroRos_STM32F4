@@ -61,6 +61,8 @@ void Error_Handler(void);
 #define Trigger1_GPIO_Port GPIOC
 #define Trigger2_Pin GPIO_PIN_1
 #define Trigger2_GPIO_Port GPIOC
+#define Reboot_Pin_Pin GPIO_PIN_2
+#define Reboot_Pin_GPIO_Port GPIOC
 #define LED_Pin GPIO_PIN_12
 #define LED_GPIO_Port GPIOA
 

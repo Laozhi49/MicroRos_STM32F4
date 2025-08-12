@@ -120,7 +120,6 @@ rcl_node_t node;
 rcl_timer_t timer;
 rcl_timer_t timer_ultrasonic;
 
-
 void fill_imu_message() {
     // 从IMU读取数据（根据你的传感器API）
     MPU6050_Process();
@@ -191,6 +190,17 @@ void twist_callback(const void *msg_in)
     __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1500);
     __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1500);
   }
+
+  if(angular_z>0)
+  {
+    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1400);
+    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1500);
+  }
+  else if(angular_z<0)
+  {
+    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1500);
+    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1600);
+  }
 }
 
 void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
@@ -203,6 +213,17 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
     //rcl_publish(&publisher, &msg, NULL);
     //msg.data++;
   }
+}
+
+void Reboot_Check()
+{
+  static uint8_t RebootPin_status = GPIO_PIN_RESET;
+  if((HAL_GPIO_ReadPin(Reboot_Pin_GPIO_Port,Reboot_Pin_Pin) == GPIO_PIN_SET) && (RebootPin_status == GPIO_PIN_RESET))
+  {
+    NVIC_SystemReset();
+  }
+    
+  RebootPin_status = HAL_GPIO_ReadPin(Reboot_Pin_GPIO_Port,Reboot_Pin_Pin);
 }
 
 /* USER CODE END FunctionPrototypes */
@@ -365,6 +386,7 @@ void StartUltrasonicTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
+    Reboot_Check();
     Ultrasonic_Start();
     osDelay(80);
   }
