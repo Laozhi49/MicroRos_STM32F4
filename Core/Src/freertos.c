@@ -48,6 +48,7 @@
 #include "tim.h"
 #include "mpu6050.h"
 #include "ultrasonic.h"
+#include "motor_control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -180,26 +181,25 @@ void twist_callback(const void *msg_in)
 
   if(linear_x>0)
   {
-    //HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,1);
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1400);
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1600);
+    Motor_Forward();
   }
   else if(linear_x<0)
   {
-    //HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,0);
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1500);
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1500);
+    Motor_Backward();
   }
 
   if(angular_z>0)
   {
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1400);
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1500);
+    Motor_Righturn();
   }
   else if(angular_z<0)
   {
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1500);
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1600);
+    Motor_LeftTurn();
+  }
+
+  if(linear_x == 0 && angular_z == 0)
+  {
+    Motor_Stop();
   }
 }
 

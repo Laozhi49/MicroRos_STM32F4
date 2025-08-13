@@ -73,6 +73,7 @@ Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
 mpu6050/mpu6050.c \
 ultrasonic/ultrasonic.c \
+motor_control/motor_control.c \
 Core/Src/sysmem.c \
 Core/Src/syscalls.c \
 Core/Src/i2c.c \
@@ -158,7 +159,8 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
 -IDrivers/CMSIS/Include \
 -Impu6050 \
--Iultrasonic
+-Iultrasonic \
+-Imotor_control
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

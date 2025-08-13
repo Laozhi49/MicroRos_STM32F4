@@ -29,6 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include "mpu6050.h"
 #include "ultrasonic.h"
+#include "motor_control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -99,13 +100,8 @@ int main(void)
   MX_TIM8_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  // 启动点击pwm
-  //HAL_TIM_Base_Start(&htim8);
-  HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_2);
   
-  __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1500);
-  __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1500);
+  Motor_initial();
 
   MPU6050_Init(&hi2c2); 
 

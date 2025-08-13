@@ -10,8 +10,6 @@
 #ifndef __MPU6050_H_
 #define __MPU6050_H_
 
-#endif /* INC_GY521_H_ */
-
 #include <stdint.h>
 #include "i2c.h"
 
@@ -93,3 +91,6 @@ double Kalman_getAngle(Kalman_t *Kalman, double newAngle, double newRate, double
 
 void MPU6050_CheckDeviation(MPU6050_t *DataStruct);
 void MPU6050_Process();
+
+
+#endif /* INC_GY521_H_ */
