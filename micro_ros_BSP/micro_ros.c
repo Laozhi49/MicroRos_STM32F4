@@ -1,6 +1,6 @@
 #include "micro_ros.h"
 
-rcl_publisher_t publisher;
+rcl_publisher_t publisher_imu;
 rcl_publisher_t publisher_ultrasonic;
 
 std_msgs__msg__Int32 msg;
@@ -106,7 +106,7 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
   if (timer != NULL)
   {
     fill_imu_message();
-    rcl_publish(&publisher, &imu_msg, NULL);
+    rcl_publish(&publisher_imu, &imu_msg, NULL);
     //rcl_publish(&publisher, &msg, NULL);
     //msg.data++;
   }
@@ -152,7 +152,7 @@ void Micro_Ros_initial()
  
   // imu数据
   rclc_publisher_init_default(
-    &publisher,
+    &publisher_imu,
     &node,
     ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Imu),
     "imu_data");

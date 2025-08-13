@@ -280,13 +280,13 @@ void MPU6050_GetAngle(MPU6050_t *DataStruct)
     DataStruct->KalmanAngleX = Kalman_getAngle(&KalmanX, roll, DataStruct->Gx, dt);
 		
 		
-		//计算偏好角
-		//90  2080   
-		if(abs_int16(DataStruct->Gz)>0.4)
-		{
-		  MPU6050.Yaw_360 -= DataStruct->Gz/100.0f;
-			MPU6050.Yaw_8192 = MPU6050.Yaw_360*22.7555555556f;
-		}
+    //计算偏航角
+    //90  2080   
+    if(abs_int16(DataStruct->Gz)>0.4)
+    {
+        MPU6050.Yaw_360 -= DataStruct->Gz/100.0f;
+        MPU6050.Yaw_8192 = MPU6050.Yaw_360*22.7555555556f;
+    }
 }
 
 
@@ -358,12 +358,12 @@ void MPU6050_CheckDeviation(MPU6050_t *DataStruct)
 	
 	while(tick<1000)
 	{
-		MPU6050_Read_All(&hi2c2, &MPU6050);
-		Gyro_X_sum += DataStruct->Gyro_X_RAW;
-		Gyro_Y_sum += DataStruct->Gyro_Y_RAW;
-		Gyro_Z_sum += DataStruct->Gyro_Z_RAW;
-		tick++;
-	  HAL_Delay(10);
+        MPU6050_Read_All(&hi2c2, &MPU6050);
+        Gyro_X_sum += DataStruct->Gyro_X_RAW;
+        Gyro_Y_sum += DataStruct->Gyro_Y_RAW;
+        Gyro_Z_sum += DataStruct->Gyro_Z_RAW;
+        tick++;
+        HAL_Delay(10);
 	}
 	DataStruct->Gyro_X_RAW_Dev = Gyro_X_sum/1000.0f;
 	DataStruct->Gyro_Y_RAW_Dev = Gyro_Y_sum/1000.0f;
