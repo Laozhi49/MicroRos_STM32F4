@@ -25,16 +25,16 @@ void Motor_Backward()
     __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1450);
 }
 
-void Motor_Righturn()
+void Motor_RightTurn()
 {
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1450);
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1450);
+    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1550);
+    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1550);
 }
 
 void Motor_LeftTurn()
 {
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1550);
-    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1550);
+    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 1450);
+    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 1450);
 }
 
 void Motor_Stop()

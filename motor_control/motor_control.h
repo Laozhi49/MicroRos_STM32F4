@@ -9,7 +9,7 @@ void Motor_initial();
 void Motor_Forward();
 void Motor_Backward();
 void Motor_LeftTurn();
-void Motor_Righturn();
+void Motor_RightTurn();
 void Motor_Stop();
 
 #endif

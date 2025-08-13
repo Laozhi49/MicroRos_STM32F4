@@ -190,11 +190,11 @@ void twist_callback(const void *msg_in)
 
   if(angular_z>0)
   {
-    Motor_Righturn();
+    Motor_LeftTurn();
   }
   else if(angular_z<0)
   {
-    Motor_LeftTurn();
+    Motor_RightTurn();
   }
 
   if(linear_x == 0 && angular_z == 0)
