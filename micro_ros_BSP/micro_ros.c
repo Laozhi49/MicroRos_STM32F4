@@ -4,7 +4,8 @@ rcl_publisher_t publisher_imu;
 rcl_publisher_t publisher_ultrasonic;
 
 std_msgs__msg__Int32 msg;
-sensor_msgs__msg__Imu imu_msg;
+// sensor_msgs__msg__Imu imu_msg;
+std_msgs__msg__Float32MultiArray imu_msg;
 std_msgs__msg__Float32MultiArray ultrasonic_msg;
 
 rcl_subscription_t subscriber;
@@ -23,38 +24,41 @@ void fill_imu_message() {
     MPU6050_Process();
 
     // 设置时间戳
-    int64_t stamp = rmw_uros_epoch_millis();
-    imu_msg.header.stamp.sec = stamp * 1e-3;
-    imu_msg.header.stamp.nanosec = stamp - imu_msg.header.stamp.sec * 1000;
-    micro_ros_string_utilities_set(imu_msg.header.frame_id, "imu_link");  // 设置坐标系
+    // int64_t stamp = rmw_uros_epoch_millis();
+    // imu_msg.header.stamp.sec = stamp * 1e-3;
+    // imu_msg.header.stamp.nanosec = stamp - imu_msg.header.stamp.sec * 1000;
+    // micro_ros_string_utilities_set(imu_msg.header.frame_id, "imu_link");  // 设置坐标系
     
-    // 填充加速度数据 (m/s^2)
-    imu_msg.linear_acceleration.x = MPU6050.Ax;
-    imu_msg.linear_acceleration.y = MPU6050.Ay;
-    imu_msg.linear_acceleration.z = MPU6050.Az;
+    // // 填充加速度数据 (m/s^2)
+    // imu_msg.linear_acceleration.x = MPU6050.Ax;
+    // imu_msg.linear_acceleration.y = MPU6050.Ay;
+    // imu_msg.linear_acceleration.z = MPU6050.Az;
     
-    // 填充角速度数据 (rad/s)
-    imu_msg.angular_velocity.x = MPU6050.Gx;
-    imu_msg.angular_velocity.y = MPU6050.Gy;
-    imu_msg.angular_velocity.z = MPU6050.Gz;
+    // // 填充角速度数据 (rad/s)
+    // imu_msg.angular_velocity.x = MPU6050.Gx;
+    // imu_msg.angular_velocity.y = MPU6050.Gy;
+    // imu_msg.angular_velocity.z = MPU6050.Gz;
     
-    // 如果没有方向数据，可以设置为0并设置协方差为-1
-    imu_msg.orientation.x = 0.0;
-    imu_msg.orientation.y = 0.0;
-    imu_msg.orientation.z = 0.0;
-    imu_msg.orientation.w = 1.0;
+    // // 如果没有方向数据，可以设置为0并设置协方差为-1
+    // imu_msg.orientation.x = 0.0;
+    // imu_msg.orientation.y = 0.0;
+    // imu_msg.orientation.z = 0.0;
+    // imu_msg.orientation.w = 1.0;
     
-    // 设置协方差矩阵（根据你的传感器特性）
-    // 行主序排列
-    imu_msg.orientation_covariance[0] = -1;  // 表示方向数据不可用
-    imu_msg.angular_velocity_covariance[0] = 0.01;  // 示例值
-    imu_msg.linear_acceleration_covariance[0] = 0.01;  // 示例值
-    // imu_msg.data.data[0] = MPU6050.Ax;  // ax
-    // imu_msg.data.data[1] = MPU6050.Ay;  // ay
-    // imu_msg.data.data[2] = MPU6050.Az;  // az
-    // imu_msg.data.data[3] = MPU6050.Gx;   // gx
-    // imu_msg.data.data[4] = MPU6050.Gy;   // gy
-    // imu_msg.data.data[5] = MPU6050.Gz;   // gz
+    // // 设置协方差矩阵（根据你的传感器特性）
+    // // 行主序排列
+    // imu_msg.orientation_covariance[0] = -1;  // 表示方向数据不可用
+    // imu_msg.angular_velocity_covariance[0] = 0.01;  // 示例值
+    // imu_msg.linear_acceleration_covariance[0] = 0.01;  // 示例值
+    imu_msg.data.data[0] = MPU6050.Ax;  // ax
+    imu_msg.data.data[1] = MPU6050.Ay;  // ay
+    imu_msg.data.data[2] = MPU6050.Az;  // az
+    imu_msg.data.data[3] = MPU6050.Gx;   // gx
+    imu_msg.data.data[4] = MPU6050.Gy;   // gy
+    imu_msg.data.data[5] = MPU6050.Gz;   // gz
+
+    // imu_msg.data.data[6] = Ultrasonic_getLeftDistance();
+    // imu_msg.data.data[7] = Ultrasonic_getRightDistance();
 }
 
 void ultrasonic_publish()
@@ -154,8 +158,13 @@ void Micro_Ros_initial()
   rclc_publisher_init_default(
     &publisher_imu,
     &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Imu),
-    "imu_data");
+    //ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Imu),
+    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
+    "imu_raw_data");
+
+  imu_msg.data.data = (float *)malloc(2 * sizeof(float));
+  imu_msg.data.size = 6;
+
 
   // 超声波数据
   rclc_publisher_init_default(
@@ -175,25 +184,26 @@ void Micro_Ros_initial()
       ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist),
       "/cmd_vel");
 
-  // 创建定时器，16ms发一次
-  const unsigned int timer_timeout = 16;
-  rclc_timer_init_default(
-      &timer,
-      &support,
-      RCL_MS_TO_NS(timer_timeout),
-      timer_callback);
+  // 创建定时器，10ms发一次
+  // const unsigned int timer_timeout = 5;
+  // rclc_timer_init_default(
+  //     &timer,
+  //     &support,
+  //     RCL_MS_TO_NS(timer_timeout),
+  //     timer_callback);
   
-  rclc_executor_init(&executor, &support.context, 2, &allocator);
+  rclc_executor_init(&executor, &support.context, 1, &allocator);
   // 给执行器添加定时器
-  rclc_executor_add_timer(&executor, &timer);
+  // rclc_executor_add_timer(&executor, &timer);
   // 设置订阅的回调函数
   rclc_executor_add_subscription(&executor, &subscriber, &sub_msg, &twist_callback, ON_NEW_DATA);
 }
 
 void Micro_Ros_Process()
 {
-    rclc_executor_spin_some(&executor, RCL_MS_TO_NS(10)); // 循环处理数据
-    // fill_imu_message();
-    // rcl_publish(&publisher, &imu_msg, NULL);
+    fill_imu_message();
+    rcl_publish(&publisher_imu, &imu_msg, NULL);
     ultrasonic_publish();
+    rclc_executor_spin_some(&executor, RCL_MS_TO_NS(2)); // 循环处理数据
+    // rcl_publish(&publisher, &imu_msg, NULL);
 }

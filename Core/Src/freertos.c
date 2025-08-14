@@ -54,16 +54,11 @@ typedef StaticTask_t osStaticThreadDef_t;
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-/* Definitions for MicroRosTask */
-osThreadId_t MicroRosTaskHandle;
-uint32_t defaultTaskBuffer[ 3000 ];
-osStaticThreadDef_t defaultTaskControlBlock;
-const osThreadAttr_t MicroRosTask_attributes = {
-  .name = "MicroRosTask",
-  .cb_mem = &defaultTaskControlBlock,
-  .cb_size = sizeof(defaultTaskControlBlock),
-  .stack_mem = &defaultTaskBuffer[0],
-  .stack_size = sizeof(defaultTaskBuffer),
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for UltrasonicTask */
@@ -71,6 +66,18 @@ osThreadId_t UltrasonicTaskHandle;
 const osThreadAttr_t UltrasonicTask_attributes = {
   .name = "UltrasonicTask",
   .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for microRosTask */
+osThreadId_t microRosTaskHandle;
+uint32_t microRosTaskBuffer[ 3000 ];
+osStaticThreadDef_t microRosTaskControlBlock;
+const osThreadAttr_t microRosTask_attributes = {
+  .name = "microRosTask",
+  .cb_mem = &microRosTaskControlBlock,
+  .cb_size = sizeof(microRosTaskControlBlock),
+  .stack_mem = &microRosTaskBuffer[0],
+  .stack_size = sizeof(microRosTaskBuffer),
   .priority = (osPriority_t) osPriorityLow,
 };
 
@@ -90,8 +97,9 @@ void Reboot_Check()
 
 /* USER CODE END FunctionPrototypes */
 
-void StartMicroRosTask(void *argument);
+void StartDefaultTask(void *argument);
 void StartUltrasonicTask(void *argument);
+void StartmicroRosTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -122,11 +130,14 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of MicroRosTask */
-  MicroRosTaskHandle = osThreadNew(StartMicroRosTask, NULL, &MicroRosTask_attributes);
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* creation of UltrasonicTask */
   UltrasonicTaskHandle = osThreadNew(StartUltrasonicTask, NULL, &UltrasonicTask_attributes);
+
+  /* creation of microRosTask */
+  microRosTaskHandle = osThreadNew(StartmicroRosTask, NULL, &microRosTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -138,25 +149,22 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_StartMicroRosTask */
+/* USER CODE BEGIN Header_StartDefaultTask */
 /**
-  * @brief  Function implementing the MicroRosTask thread.
+  * @brief  Function implementing the defaultTask thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartMicroRosTask */
-void StartMicroRosTask(void *argument)
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void *argument)
 {
-  /* USER CODE BEGIN StartMicroRosTask */
+  /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
-  Micro_Ros_initial();
-
   for(;;)
   {
-    Micro_Ros_Process();
-    osDelay(5);
+    osDelay(10);
   }
-  /* USER CODE END StartMicroRosTask */
+  /* USER CODE END StartDefaultTask */
 }
 
 /* USER CODE BEGIN Header_StartUltrasonicTask */
@@ -177,6 +185,33 @@ void StartUltrasonicTask(void *argument)
     osDelay(80);
   }
   /* USER CODE END StartUltrasonicTask */
+}
+
+/* USER CODE BEGIN Header_StartmicroRosTask */
+/**
+* @brief Function implementing the microRosTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartmicroRosTask */
+void StartmicroRosTask(void *argument)
+{
+  /* USER CODE BEGIN StartmicroRosTask */
+  TickType_t xLastWakeTime;
+  const TickType_t xFrequency = pdMS_TO_TICKS(10); // 10 ms
+
+  // Initialize xLastWakeTime with the current tick count
+  xLastWakeTime = xTaskGetTickCount();
+
+  Micro_Ros_initial();
+  /* Infinite loop */
+  for(;;)
+  {
+    Micro_Ros_Process();
+    //osDelay(5);
+    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+  }
+  /* USER CODE END StartmicroRosTask */
 }
 
 /* Private application code --------------------------------------------------*/
